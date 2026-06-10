@@ -4,7 +4,7 @@ class AppConstants {
   static const String appName = 'HealthSync';
   static const String baseUrl = String.fromEnvironment(
     'BASE_URL',
-    defaultValue: 'http://localhost:8000/api',
+    defaultValue: 'https://healthsync.onrender.com/api',
   );
 
   // Shared Preferences / Storage keys

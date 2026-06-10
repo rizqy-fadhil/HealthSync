@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/neubrutalism_theme.dart';
 import 'presentation/pages/main_page.dart';
-import 'package:frontend/presentation/pages/auth/login_page.dart'; // <--- CONTOH (Sesuaikan dengan struktur foldermu)
+import 'presentation/pages/auth/login_page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
