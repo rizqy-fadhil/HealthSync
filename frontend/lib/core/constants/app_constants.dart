@@ -4,7 +4,7 @@ class AppConstants {
   static const String appName = 'HealthSync';
   static const String baseUrl = String.fromEnvironment(
     'BASE_URL',
-    defaultValue: 'https://healthsync.onrender.com/api',
+    defaultValue: 'https://healthsync-backend.vercel.app/api',
   );
 
   // Shared Preferences / Storage keys
