@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('health_logs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->integer('water_intake')->nullable();
             $table->float('sleep_duration')->nullable();
             $table->float('weight')->nullable();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/neubrutalism_theme.dart';
 import '../../../core/utils/health_data_store.dart';
@@ -45,6 +46,7 @@ class _AddLogPageState extends State<AddLogPage> {
     await Future.delayed(const Duration(milliseconds: 500));
 
     final value = double.tryParse(_valueController.text.trim()) ?? 0;
+    if (value <= 0) return; // extra guard — validator should catch this
     
     int? waterIntake;
     double? sleepDuration;
@@ -262,6 +264,9 @@ class _AddLogPageState extends State<AddLogPage> {
                   child: TextFormField(
                     controller: _valueController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^[1-9]\d*\.?\d*$')),
+                    ],
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 52,
                       fontWeight: FontWeight.w900,
@@ -280,8 +285,10 @@ class _AddLogPageState extends State<AddLogPage> {
                       contentPadding: EdgeInsets.zero,
                     ),
                     validator: (v) {
-                      if (v == null || v.isEmpty) return 'Enter a value';
-                      if (double.tryParse(v) == null) return 'Invalid number';
+                      if (v == null || v.isEmpty) return 'Enter a value!';
+                      final num = double.tryParse(v);
+                      if (num == null) return 'Invalid number!';
+                      if (num <= 0) return 'Must be greater than 0!';
                       return null;
                     },
                   ),

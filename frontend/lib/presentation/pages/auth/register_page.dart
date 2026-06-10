@@ -6,38 +6,44 @@ import '../../../core/services/auth_service.dart';
 import '../../../core/utils/health_data_store.dart';
 import '../../widgets/common/neu_button.dart';
 import '../main_page.dart';
-import 'register_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      await AuthService.login(
+      await AuthService.register(
+        name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        passwordConfirmation: _confirmPasswordController.text,
       );
 
       HealthDataStore.clear(); // ← Clear stale data from previous session
@@ -95,12 +101,12 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  /// Neubrutalist error SnackBar — Hot Pink, thick border, sharp corners.
+  /// Neubrutalist error SnackBar — Electric Yellow, thick border, sharp corners.
   void _showNeuErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: NeuColors.pink,
+        backgroundColor: NeuColors.yellow,
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -125,31 +131,35 @@ class _LoginPageState extends State<LoginPage> {
             _buildHeader(),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 32, 20, 20),
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildWelcomeText(),
-                      const SizedBox(height: 32),
+                      _buildTitle(),
+                      const SizedBox(height: 28),
+                      _buildNameField(),
+                      const SizedBox(height: 16),
                       _buildEmailField(),
                       const SizedBox(height: 16),
                       _buildPasswordField(),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
+                      _buildConfirmPasswordField(),
+                      const SizedBox(height: 28),
                       SizedBox(
                         width: double.infinity,
                         child: NeuButton(
-                          label: "LET'S GO!",
-                          color: NeuColors.yellow,
+                          label: 'SIGN UP!',
+                          color: NeuColors.pink,
                           fontSize: 20,
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           isLoading: _isLoading,
-                          onPressed: _handleLogin,
+                          onPressed: _handleRegister,
                         ),
                       ),
                       const SizedBox(height: 24),
-                      _buildRegisterFooter(),
+                      _buildLoginFooter(),
                     ],
                   ),
                 ),
@@ -167,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: const BoxDecoration(
-        color: NeuColors.pink,
+        color: NeuColors.mint,
         border: Border(
           bottom: BorderSide(color: NeuColors.black, width: NeuDimens.borderWidth),
         ),
@@ -188,13 +198,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ─── Welcome Text ─────────────────────────────
-  Widget _buildWelcomeText() {
+  // ─── Title ─────────────────────────────────────
+  Widget _buildTitle() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'WELCOME\nBACK!',
+          'JOIN\nUS!',
           style: GoogleFonts.spaceGrotesk(
             fontSize: 48,
             fontWeight: FontWeight.w900,
@@ -206,12 +216,78 @@ class _LoginPageState extends State<LoginPage> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: NeuColors.mint,
+            color: NeuColors.yellow,
             border: Border.all(color: NeuColors.black, width: 3),
           ),
           child: Text(
-            'LOG IN TO CONTINUE',
+            'CREATE YOUR ACCOUNT',
             style: neuText(size: 13, letterSpacing: 1.5),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ─── Name Field ────────────────────────────────
+  Widget _buildNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: const BoxDecoration(
+            color: NeuColors.black,
+            border: Border(
+              bottom: BorderSide(color: NeuColors.black, width: NeuDimens.borderWidth),
+            ),
+          ),
+          child: Text(
+            '👤  FULL NAME',
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: NeuColors.mint,
+              letterSpacing: 2,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: NeuColors.white,
+            border: Border.all(color: NeuColors.black, width: NeuDimens.borderWidth),
+            boxShadow: const [
+              BoxShadow(
+                color: NeuColors.black,
+                offset: Offset(6, 6),
+                blurRadius: 0,
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: _nameController,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: NeuColors.black,
+            ),
+            decoration: InputDecoration(
+              hintText: 'John Doe',
+              hintStyle: GoogleFonts.spaceGrotesk(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: NeuColors.black.withAlpha(40),
+              ),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            ),
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) return 'Name is required!';
+              if (v.trim().length < 2) return 'Name is too short!';
+              return null;
+            },
           ),
         ),
       ],
@@ -237,7 +313,7 @@ class _LoginPageState extends State<LoginPage> {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: NeuColors.mint,
+              color: NeuColors.yellow,
               letterSpacing: 2,
             ),
           ),
@@ -304,7 +380,7 @@ class _LoginPageState extends State<LoginPage> {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: NeuColors.yellow,
+              color: NeuColors.pink,
               letterSpacing: 2,
             ),
           ),
@@ -345,7 +421,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   margin: const EdgeInsets.all(8),
                   padding: const EdgeInsets.all(6),
-                  color: NeuColors.yellow,
+                  color: NeuColors.mint,
                   child: Icon(
                     _obscurePassword ? Icons.visibility_off : Icons.visibility,
                     color: NeuColors.black,
@@ -365,18 +441,95 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ─── Register Footer ──────────────────────────
-  Widget _buildRegisterFooter() {
+  // ─── Confirm Password Field ───────────────────
+  Widget _buildConfirmPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: const BoxDecoration(
+            color: NeuColors.black,
+            border: Border(
+              bottom: BorderSide(color: NeuColors.black, width: NeuDimens.borderWidth),
+            ),
+          ),
+          child: Text(
+            '🔐  CONFIRM PASSWORD',
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: NeuColors.mint,
+              letterSpacing: 2,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: NeuColors.white,
+            border: Border.all(color: NeuColors.black, width: NeuDimens.borderWidth),
+            boxShadow: const [
+              BoxShadow(
+                color: NeuColors.black,
+                offset: Offset(6, 6),
+                blurRadius: 0,
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: _confirmPasswordController,
+            obscureText: _obscureConfirmPassword,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: NeuColors.black,
+            ),
+            decoration: InputDecoration(
+              hintText: '••••••••',
+              hintStyle: GoogleFonts.spaceGrotesk(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: NeuColors.black.withAlpha(40),
+              ),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              suffixIcon: GestureDetector(
+                onTap: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                child: Container(
+                  margin: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
+                  color: NeuColors.yellow,
+                  child: Icon(
+                    _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                    color: NeuColors.black,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
+            validator: (v) {
+              if (v == null || v.isEmpty) return 'Confirm your password!';
+              if (v != _passwordController.text) return 'Passwords don\'t match!';
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ─── Login Footer ─────────────────────────────
+  Widget _buildLoginFooter() {
     return Center(
       child: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const RegisterPage()),
-        ),
+        onTap: () => Navigator.pop(context),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           decoration: BoxDecoration(
-            color: NeuColors.pink,
+            color: NeuColors.yellow,
             border: Border.all(color: NeuColors.black, width: 3),
             boxShadow: const [
               BoxShadow(
@@ -390,7 +543,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'NO ACCOUNT?',
+                'HAVE AN ACCOUNT?',
                 style: neuText(size: 13, letterSpacing: 1),
               ),
               const SizedBox(width: 8),
@@ -400,8 +553,8 @@ class _LoginPageState extends State<LoginPage> {
                   color: NeuColors.black,
                 ),
                 child: Text(
-                  'REGISTER',
-                  style: neuText(size: 13, color: NeuColors.pink, letterSpacing: 1),
+                  'LOGIN',
+                  style: neuText(size: 13, color: NeuColors.yellow, letterSpacing: 1),
                 ),
               ),
             ],

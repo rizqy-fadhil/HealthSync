@@ -5,6 +5,7 @@ import '../../../core/utils/health_data_store.dart';
 import '../../../data/models/health_log.dart';
 import '../../widgets/common/neu_card.dart';
 import '../../widgets/common/neu_button.dart';
+import '../profile/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   final VoidCallback onAddLog;
@@ -85,12 +86,18 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        NeuCard(
-          color: NeuColors.pink,
-          shadowX: 4,
-          shadowY: 4,
-          padding: const EdgeInsets.all(14),
-          child: const Icon(Icons.person_rounded, size: 32, color: NeuColors.black),
+        GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ProfilePage()),
+          ),
+          child: NeuCard(
+            color: NeuColors.pink,
+            shadowX: 4,
+            shadowY: 4,
+            padding: const EdgeInsets.all(14),
+            child: const Icon(Icons.person_rounded, size: 32, color: NeuColors.black),
+          ),
         ),
       ],
     );

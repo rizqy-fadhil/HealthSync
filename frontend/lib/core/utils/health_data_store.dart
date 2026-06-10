@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../constants/app_constants.dart';
+import '../services/auth_service.dart';
 import '../../data/models/health_log.dart';
 
 class HealthDataStore {
@@ -19,26 +20,48 @@ class HealthDataStore {
 
   static List<HealthLog> get logs => List.unmodifiable(_logs);
 
+  /// Clear all cached logs (used on logout).
+  static void clear() {
+    _logs = [];
+  }
+
+  /// Build Dio Options with the saved Bearer token.
+  static Future<Options> _authOptions() async {
+    final token = await AuthService.getToken();
+    if (token == null) {
+      print('[HealthDataStore] WARNING: No auth token found!');
+    } else {
+      print('[HealthDataStore] Using token: ${token.substring(0, 10)}...');
+    }
+    return Options(
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
   static Future<void> fetchLogs() async {
     try {
-      final response = await _dio.get('/health-logs');
+      final response = await _dio.get('/health-logs', options: await _authOptions());
+      print('[HealthDataStore] fetchLogs status: ${response.statusCode}, count: ${(response.data as List).length}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         _logs = data.map((json) => HealthLog.fromJson(json)).toList();
       }
     } catch (e) {
-      print('Error fetching logs: $e');
+      print('[HealthDataStore] Error fetching logs: $e');
     }
   }
 
   static Future<void> addLog(HealthLog log) async {
     try {
-      final response = await _dio.post('/health-logs', data: log.toJson());
+      final response = await _dio.post('/health-logs', data: log.toJson(), options: await _authOptions());
+      print('[HealthDataStore] addLog status: ${response.statusCode}');
       if (response.statusCode == 201) {
         _logs.insert(0, HealthLog.fromJson(response.data));
       }
     } catch (e) {
-      print('Error adding log: $e');
+      print('[HealthDataStore] Error adding log: $e');
     }
   }
 

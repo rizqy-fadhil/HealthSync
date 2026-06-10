@@ -27,8 +27,10 @@ class _HistoryPageState extends State<HistoryPage> {
     }).toList();
 
     // Group by date
+    // Group by date
     final Map<String, List<HealthLog>> grouped = {};
     for (final log in logs) {
+      // timestamp sudah local time dari HealthLog.fromJson() → langsung pakai
       final key = _dateKey(log.timestamp);
       grouped.putIfAbsent(key, () => []).add(log);
     }
@@ -68,7 +70,10 @@ class _HistoryPageState extends State<HistoryPage> {
       decoration: const BoxDecoration(
         color: NeuColors.mint,
         border: Border(
-          bottom: BorderSide(color: NeuColors.black, width: NeuDimens.borderWidth),
+          bottom: BorderSide(
+            color: NeuColors.black,
+            width: NeuDimens.borderWidth,
+          ),
         ),
       ),
       child: Row(
@@ -102,7 +107,10 @@ class _HistoryPageState extends State<HistoryPage> {
       decoration: const BoxDecoration(
         color: NeuColors.white,
         border: Border(
-          bottom: BorderSide(color: NeuColors.black, width: NeuDimens.borderWidth),
+          bottom: BorderSide(
+            color: NeuColors.black,
+            width: NeuDimens.borderWidth,
+          ),
         ),
       ),
       child: ListView(
@@ -116,15 +124,17 @@ class _HistoryPageState extends State<HistoryPage> {
             onTap: () => setState(() => _filterType = null),
           ),
           const SizedBox(width: 8),
-          ...LogType.values.map((t) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: _FilterChip(
-                  label: '${t.emoji} ${t.label.toUpperCase()}',
-                  isActive: _filterType == t,
-                  color: t.color,
-                  onTap: () => setState(() => _filterType = t),
-                ),
-              )),
+          ...LogType.values.map(
+            (t) => Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: _FilterChip(
+                label: '${t.emoji} ${t.label.toUpperCase()}',
+                isActive: _filterType == t,
+                color: t.color,
+                onTap: () => setState(() => _filterType = t),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -137,10 +147,12 @@ class _HistoryPageState extends State<HistoryPage> {
       children: [
         _buildDateHeader(dateKey),
         const SizedBox(height: 10),
-        ...logs.map((log) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _HistoryLogCard(log: log),
-            )),
+        ...logs.map(
+          (log) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _HistoryLogCard(log: log),
+          ),
+        ),
         const SizedBox(height: 8),
       ],
     );
@@ -149,9 +161,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget _buildDateHeader(String dateKey) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: const BoxDecoration(
-        color: NeuColors.black,
-      ),
+      decoration: const BoxDecoration(color: NeuColors.black),
       child: Text(
         dateKey,
         style: GoogleFonts.spaceGrotesk(
@@ -207,8 +217,10 @@ class _HistoryPageState extends State<HistoryPage> {
     final today = DateTime(now.year, now.month, now.day);
     final day = DateTime(dt.year, dt.month, dt.day);
     final diff = today.difference(day).inDays;
-    if (diff == 0) return 'TODAY — ${DateFormat('MMM d').format(dt).toUpperCase()}';
-    if (diff == 1) return 'YESTERDAY — ${DateFormat('MMM d').format(dt).toUpperCase()}';
+    if (diff == 0)
+      return 'TODAY — ${DateFormat('MMM d').format(dt).toUpperCase()}';
+    if (diff == 1)
+      return 'YESTERDAY — ${DateFormat('MMM d').format(dt).toUpperCase()}';
     return DateFormat('EEEE, MMM d').format(dt).toUpperCase();
   }
 }
@@ -236,12 +248,18 @@ class _HistoryLogCard extends StatelessWidget {
             decoration: const BoxDecoration(
               color: NeuColors.black,
               border: Border(
-                right: BorderSide(color: NeuColors.black, width: NeuDimens.borderWidth),
+                right: BorderSide(
+                  color: NeuColors.black,
+                  width: NeuDimens.borderWidth,
+                ),
               ),
             ),
             child: Column(
               children: [
-                Text(log.primaryType.emoji, style: const TextStyle(fontSize: 22)),
+                Text(
+                  log.primaryType.emoji,
+                  style: const TextStyle(fontSize: 22),
+                ),
               ],
             ),
           ),
@@ -286,7 +304,10 @@ class _HistoryLogCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: const BoxDecoration(
               border: Border(
-                left: BorderSide(color: NeuColors.black, width: NeuDimens.borderWidth),
+                left: BorderSide(
+                  color: NeuColors.black,
+                  width: NeuDimens.borderWidth,
+                ),
               ),
             ),
             child: Text(
