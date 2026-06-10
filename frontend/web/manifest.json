@@ -1,11 +1,11 @@
 {
-    "name": "frontend",
-    "short_name": "frontend",
+    "name": "HealthSync",
+    "short_name": "HealthSync",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFFCF0",
+    "theme_color": "#000000",
+    "description": "Track your water intake, sleep, and weight with a bold neubrutalist interface.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
